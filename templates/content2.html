@@ -1,0 +1,31 @@
+{% extends "main.html" %}
+{% block title %}Upload Files{% endblock %}
+{% block content %}
+<!-- {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul>
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %} 
+{% endwith %} -->
+<h1>Upload Files</h1>
+<form method="POST" enctype="multipart/form-data" action="/upload">
+    <div id="sections">
+        <label for="section">Section:</label>
+        <select id="section" name="section" required>
+            {% set sections = session['sections'] | int %}
+            {% for i in range(1, sections + 1) %}
+                <option value="Section{{ i }}">Section{{ i }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <label for="date">Date</label>
+    <input type="date" name="date" id="date">
+    <label for="attendance_list">Attendance List:</label>
+    <input type="file" name="attendance_list" id="attendance_list" required><br><br>
+    
+    <input type="submit" value="Upload">
+</form>
+{% endblock %}

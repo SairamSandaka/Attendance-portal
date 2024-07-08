@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .signup-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        .signup-container h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 10px;
+        }
+
+        input, select, button {
+            margin-top: 5px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Sign Up</h2>
+        <form id="signup-form" onsubmit="return validateForm()" enctype="multipart/form-data" action="/signup" method="post">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <label for="course">Course:</label>
+           
+            <select id="course" name="course" required>
+                <option value="AIDS">AIDS</option>
+                <option value="CSE">CSE</option>
+                <option value="AIML">AIML</option>
+            </select>
+            
+            <label for="sections">Number of Sections:</label>
+            <input type="number" id="sections" name="sections" required onchange="generateFileInputs()"><br>
+            
+            <div id="file-inputs-container"></div>
+            
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+    <script>
+        function validateForm() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!validateEmail(email)) {
+                alert('Please enter a valid email address.');
+                return false;
+            }
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long.');
+                return false;
+            }
+
+            return true;
+        }
+
+        function validateEmail(email) {
+            const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        function generateFileInputs() {
+            const container = document.getElementById('file-inputs-container');
+            container.innerHTML = ''; // Clear any existing inputs
+            const numberOfSections = document.getElementById('sections').value;
+
+            for (let i = 1; i <= numberOfSections; i++) {
+                const label = document.createElement('label');
+                label.for = `file${i}`;
+                label.textContent = `Upload File for Section ${i}:`;
+
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.id = `file${i}`;
+                input.name = `file${i}`;
+                input.required = true;
+
+                container.appendChild(label);
+                container.appendChild(input);
+            }
+        }
+    </script>
+</body>
+</html>

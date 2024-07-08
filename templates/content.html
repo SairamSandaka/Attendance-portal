@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+        }
+        #sidebar {
+            width: 20%;
+            height: 100vh;
+            background-color: #2874A6;
+            padding: 20px;
+            color: white;
+        }
+        #sidebar a {
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        #sidebar a:hover {
+            background-color: #1B4F72;
+        }
+        #sidebar .profile {
+            margin-top: auto;
+            text-align: center;
+        }
+        #main-content {
+            display: flex;
+            flex-direction: column;
+            width: 80%;
+            padding: 20px;
+        }
+        #welcome-upload {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 60%;
+            margin-right: 20px;
+            /* height: 50vh; */
+        }
+        #welcome {
+            background-color: #3498DB;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            flex: 1;
+        }
+        #calendar {
+            width: 40%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            /* height: 50vh; */
+            margin-bottom: 10px;
+        }
+        #classes {
+            background-color: #3498DB;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 20px;
+            height: 70vh;
+            overflow-y: scroll;
+        }
+        #classes table {
+            width: 100%;
+            color: white;
+            
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .form-control {
+            margin-bottom: 15px;
+        }
+        .upload-icon {
+            font-size: 50px;
+            color: #3498DB;
+            margin-bottom: 20px;
+        }
+        .btn-upload {
+            background-color: #3498DB;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        #upload {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1; /* Changed */
+        }
+
+        .upload-form {
+            display: flex; /* Added */
+            justify-content: space-between; /* Added */
+            flex-wrap: wrap; /* Added */
+        }
+
+        .upload-form .form-group {
+            flex-basis: 48%; /* Added */
+        }
+        #sidebar a{
+            color: black;
+            background-color: white;
+        }
+        .text-center{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="main" class="d-flex">
+        <div id="sidebar">
+            <a href="#">Dashboard</a>
+            <a href="#">Time Table</a>
+            <a href="#">Students</a>
+            <a href="#">Settings</a>
+            <a href="#">Account</a>
+            <hr>
+            <div class="profile mt-auto">
+                <p>{{ user }}</p>
+                <p>{{ session['email'] }}</p>
+                <form action="/logout">
+                    <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+                </form>
+            </div>
+        </div>
+        <div id="main-content">
+            <div id="welcome-calendar" class="d-flex">
+                <div id="welcome-upload">
+                    <div id="welcome">
+                        <h1>Welcome Back, {{user}}!</h1>
+                        <p>Your Students are doing great work today</p>
+                        <p>Let’s keep up the great work.</p>
+                    </div>
+                    <div id="upload" class="card">
+                        <div class="card-body">
+                            <div class="text-center">
+                                <h4>Upload Attendence sheet</h4>
+                            </div>
+                            <form method="POST" enctype="multipart/form-data" action="/upload" class="upload-form"> <!-- Added class -->
+                                <div class="form-group">
+                                    <label for="section" class="form-label">Section</label>
+                                    <select id="section" name="section" class="form-select" required>
+                                        {% set sections = session['sections'] | int %}
+                                        {% for i in range(1, sections + 1) %}
+                                            <option value="Section{{ i }}">Section{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="date" class="form-label">Date</label>
+                                    <input type="date" name="date" id="date" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="attendance_list" class="form-label">Attendance List</label>
+                                    <input type="file" name="attendance_list" id="attendance_list" class="form-control" required>
+                                </div>
+                                <div class="text-center">
+                                    <input type="submit" value="Upload" class="btn btn-upload">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div id="calendar"></div>
+            </div>
+            <div id="classes">
+                <div class="d-flex justify-content-between mb-3">
+                    <h2>Classes</h2>
+                    <div>
+                        {% set sections = session['sections'] | int %}
+                        <form action="/all" method="post">
+                            <button type="submit" name="section" value="all" class="btn btn-light btn-sm">All</button>
+                            {% for i in range(1, sections + 1) %}
+                                <button class="btn btn-light btn-sm" name="section" type="submit" value="Section{{i}}">Section{{ i }}</button>
+                            {% endfor %}
+                        </form>
+                    </div>
+                </div>
+                <table class="table">
+                    {% if selected %}
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Class</th>
+                            <th>Student</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      
+                        {% for i in data %}
+                            <tr>
+                                <td>{{ i['Roll No'] }}</td>
+                                <td>{{ i["Course"] }}</td>
+                                <td>{{ i["Student Name"] }}</td>
+                                <td>
+                                     
+                                    {% set desired_date = date %}  
+                                    {% set status_dict = i.get("status", {}) %}
+                                    {% for j in status_dict %}
+                                        {% if date in j %}
+                                            {% set result = j.get(date) %}  
+                                            {{ result }}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {{ result }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% else %}
+                        <thead>
+                            <tr>
+                                <th>Roll NO</th>
+                                <th>Class</th>
+                                <th>Student</th>
+                                <th>Attendance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            {% for i in data %}
+                                <tr>
+                                    <td>{{ i['Roll No'] }}</td>
+                                
+                                    <td>{{ i["Course"] }}</td>
+                                    <td>{{ i["Student Name"] }}</td>
+                                    <td>{{ i["percentage"] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    {% endif %}
+                    
+                </table>
+            </div>
+        </div>
+    </div>
+    <form id="dateForm" method="POST" action="/selected_date">
+        <input type="hidden" id="selectedDateInput" name="date">
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
+    <script>
+       document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                selectable: true,
+                dateClick: function(info) {
+                    const selectedDate = info.dateStr;
+                    const selectedDateInput = document.getElementById('selectedDateInput');
+                    selectedDateInput.value = selectedDate;
+                    // Submit the form
+                    document.getElementById('dateForm').submit();
+                }
+            });
+            calendar.render();
+        });
+      </script>
+</body>
+</html>
